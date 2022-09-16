@@ -2,11 +2,11 @@ from django.db import models
 
 # Create your models here.
 class Empresa(models.Model):
-    id=models.AutoField(primary_key=True)
+    id=models.CharField(primary_key=True, max_length=50,null=False)
     nit=models.IntegerField(unique=True,null=False)
     nombre=models.TextField(max_length=100,unique=True,null=False)
     ciudad=models.CharField(max_length=50,null=False)
-    direccion=models.IntegerField(null=False)
+    direccion=models.CharField(max_length=50,null=False)
     telefono=models.CharField(max_length=50)
     sector_productivo=models.CharField(max_length=50,null=False)
     fecha=models.DateField(auto_now=True) 
