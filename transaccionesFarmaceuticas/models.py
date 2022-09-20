@@ -1,10 +1,11 @@
+from xml.dom.minidom import Identified
 from django.db import models
 
 # Create your models here.
 class Empresa(models.Model):
-    id=models.CharField(primary_key=True, max_length=50,null=False)
+    id=models.AutoField(primary_key=True)
     nit=models.IntegerField(unique=True,null=False)
-    nombre=models.TextField(max_length=100,unique=True,null=False)
+    nombre=models.TextField(max_length=100)
     ciudad=models.CharField(max_length=50,null=False)
     direccion=models.CharField(max_length=50,null=False)
     telefono=models.CharField(max_length=50)
@@ -12,7 +13,7 @@ class Empresa(models.Model):
     fecha=models.DateField(auto_now=True) 
 
 class Empleados(models.Model):
-    documento=models.IntegerField(primary_key=True)
+    documento=models.IntegerField(primary_key=True,unique=True)
     nombre=models.TextField(max_length=50,null=False)
     apellidos=models.TextField(max_length=50,null=False)
     email=models.EmailField(unique=True)

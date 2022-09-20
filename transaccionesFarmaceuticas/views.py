@@ -1,13 +1,5 @@
 from django.shortcuts import render
 
-# Create your views here.
-import json
-from django.views import View
-from django.views.decorators.csrf import csrf_exempt
-from django.utils.decorators import method_decorator
-from transaccionesFarmaceuticas.models import Empresa
-from django.http import JsonResponse
-
 import json
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
@@ -44,23 +36,23 @@ class EmpresaView(View):
 
     def post(self,request):
         data=json.loads(request.body)
-        Empresa = Empresa(id=data['id'],nit=data['nit'],nombre=data['nombre'],ciudad=data['ciudad'],direccion=data['direccion'],telefono=data['telefono'],sector=data['sector'],fecha=data['fecha'])
-        Empresa.save()
+        empresa = Empresa(id=data['id'],nit=data['nit'],nombre=data['nombre'],ciudad=data['ciudad'],direccion=data['direccion'],telefono=data['telefono'],sector_productivo=data['sector_productivo'],fecha=data['fecha'])
+        empresa.save()
         datos={'mensaje':'Empresa registrada exitosamente'}
         return JsonResponse(datos)
 
     def put(self,request,id):
         data=json.loads(request.body)
-        Empresa=list(Empresa.objects.filter(id=id).values())
-        if len(Empresa)>0:
+        empresa=list(Empresa.objects.filter(id=id).values())
+        if len(empresa)>0:
             empr=Empresa.objects.get(id=id)
             empr.nit=data["nit"]
             empr.nombre=data["nombre"]
             empr.ciudad=data["ciudad"]
             empr.direccion=data["direccion"]
             empr.telefono=data["telefono"]
-            empr.sector=data["sector"]
-            empr.no_page=data["fecha"]
+            empr.sector_productivo=data["sector_productivo"]
+            empr.fecha=data["fecha"]
             empr.save()
             mensaje={"mensaje":"Empresa actualizada exitosamente."}
         else:
@@ -97,22 +89,34 @@ class UsuarioView(View):
 
         return JsonResponse(mensaje)
 
-class EmpleadoView(View):
+class EmpleadosView(View):
 
     @method_decorator(csrf_exempt)
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
 
-    def post (self, request):
-        data=json.loads(request.body)
-        try:
-            empl=Empleados.objects.get(documento=data["documento"])
-            empl=Empleados.objects.create(empleado=empl)
-            empl.save()
-            mensaje={"mensaje":"Empleado Registrado."}
-        except Empleados.DoesNotExist:
-            mensaje={"mensaje":"Empleado no existe."}
-        except Empleados.DoesNotExist:
-            mensaje={"mensaje":"empleado ya existe ."}
+    def get (self,request,documento=""):
 
-        return JsonResponse(mensaje)
+        if len(documento)>0:
+            empleado=list(Empleados.objects.filter(documento=documento).values())
+            if len(empleado)>0:
+                datos={"Empleados":empleado}
+            else:
+                datos={"mensaje":"No se encontro el usuario."}
+        else:
+            empleado=list(Empleados.objects.values())
+            if len(empleado)>0:
+                datos={"mensaje":empleado}
+            else:
+                datos={"mensaje":"No se encontraron el usuario."}
+       
+        return JsonResponse(datos)
+
+    def post(self,request):
+        data=json.loads(request.body) 
+        empresa1=Empresa.objects.get(id=data["id"])
+        empresa=Empleados.objects.create(empresa1)
+        empresa = Empleados(documento=data['documento'],nombre=data['nombre'],apellidos=data['apellidos'],email=data['email'],telefono=data['telefono'],id=data['id'],fecha=data['fecha'])
+        empresa.save()
+        datos={'mensaje':'Empleado registrado exitosamente'}
+        return JsonResponse(datos)
